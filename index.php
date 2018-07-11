@@ -15,18 +15,18 @@
 
   	Controller: <select name="combo" id="combo" onchange="joystick()">
   	</select>
-  	<input type="button" class="bsize" value="Reset" onclick="reset()">
-
+  	<input type="button" class="bsize" value="Reset Controller" onclick="buttonResetClicked()">
+  	<input type="button" class="bsize" value="Reset Position" onclick="resetPosition()">
   	<form>
 		Pitch: <input type="number" min="0" id="PitchSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
 		Alt: <input type="number" min="0" id="AltSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
 		Yaw: <input type="number" min="0" id="YawSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
 		Roll: <input type="number" min="0" id="RollSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
-	<input type="button" class="bsize" value="Send" onclick="send()">
+	<!--<input type="button" class="bsize" value="Send" onclick="send()"> -->
 	</form>
 
 	<a-scene>
-	    <a-entity camera="userHeight: 1.6"></a-entity>
+	    <a-entity id=camera camera="userHeight: 1.6"></a-entity>
 	    <!--<a-entity camera="userHeight: 1.6" universal-controls="fly: true;movementEasingY: 15;"></a-entity>-->
 		<a-assets>
 	    	<img id="groundTexture" src="../img/grassField.jpg">

@@ -150,7 +150,10 @@ var rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame 
 var configMode = false;
 var selectedAxe = "";
 syncDisplay(defaultConfig);
+
+	
 function syncDisplay(config){
+	console.log(config);
 	document.getElementById("PitchSet").value = config.pitch;
 	document.getElementById("YawSet").value = config.yaw;
 	document.getElementById("RollSet").value = config.roll;
@@ -241,13 +244,7 @@ function updateStatus() {
 				}
 				configMode = false;
 			}
-			//var axe = controller.axes[i];
-			//a.innerHTML = i + ": " + controller.axes[i].toFixed(4);
-			//a.setAttribute("value", controller.axes[i] + 1);
-			//console.log(a);
 		}
-		//console.log(a);
-		//configMode = false;
 		rAF(updateStatus);
 		return;
 	}
@@ -316,33 +313,45 @@ function joystick() {
 	var selectedID = $("#combo").val();
 	selectedController = controllers[selectedID];
 	if((selectedController.id).indexOf("Xbox") != -1){
-		config = defaultConfig;
+		Object.assign(config, defaultConfig);
 	}else if((selectedController.id).indexOf("KMODEL") != -1){
 		config = {pitch:0, yaw:3, roll:4, alt:1,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:false};
 	}else{
-		config = defaultConfig;
+		Object.assign(config, defaultConfig);
 	}
 	syncDisplay(config);
 }
 function buttonResetClicked(){
-	reset();
-	//config = defaultConfig;
+	resetController();
 }
-function reset() {
+function resetController() {
+	if((selectedController.id).indexOf("Xbox") != -1){
+		Object.assign(config, defaultConfig);
+	}else if((selectedController.id).indexOf("KMODEL") != -1){
+		config = {pitch:0, yaw:3, roll:4, alt:1,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:false};
+	}else{
+		Object.assign(config, defaultConfig);
+	}
+	syncDisplay(config);
+}
+function resetPosition() {
 	var drone = document.querySelector('a-entity#drone');
 	drone.setAttribute( "position", "0 0.4 -3.3");
 	drone.setAttribute( "rotation", "0 0 0");
-}
 
+	var camera = document.querySelector('#camera');
+var cameraRot = camera.getAttribute( "rotation" );
+cameraRot.y = 20;
+camera.setAttribute( "rotation", cameraRot);
+}
 function crash(){
 	var drone = document.querySelector('a-entity#drone');
 	var dronePos = drone.getAttribute( "position" );
 	if(dronePos.y < 0){
 		error();
-		reset();
+		resetPosition();
 	}
 }
-
 function send(){
 	 console.log(config);
 	 var PitchSet = document.getElementById('PitchSet');
@@ -356,7 +365,6 @@ function send(){
 	 console.log(config);
 
 }
-
 function onFocusAxes(elt){
 	configMode = true;
 	selectedAxe = elt.id;
@@ -370,9 +378,3 @@ function onFocusOutAxes(elt){
 function error(){
 	alert("Crashed");
 }
-
-/*function buttonPressed(evt, pressed){
-	console.log(evt.button, pressed);
-}
-window.addEventListener("MozGamepadButtonDown", function(evt) { buttonPressed(evt, true); } );
-window.addEventListener("MozGamepadButtonUp", function(evt) { buttonPressed(evt, false); } );*/
