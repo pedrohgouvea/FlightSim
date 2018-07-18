@@ -153,7 +153,7 @@ syncDisplay(defaultConfig);
 
 	
 function syncDisplay(config){
-	console.log(config);
+	//console.log(config);
 	document.getElementById("PitchSet").value = config.pitch;
 	document.getElementById("YawSet").value = config.yaw;
 	document.getElementById("RollSet").value = config.roll;
@@ -314,7 +314,7 @@ function updateStatus() {
 		else{angleXDeg = - 90 - angleXDeg}
 		cameraRot.x = angleXDeg;
 		camera.setAttribute( "rotation", cameraRot);
-		console.log(dronePos.y);
+		//console.log(dronePos.y);
 	}
 	crash();
 	spaceLimit();
@@ -384,13 +384,14 @@ function crash(){
 function spaceLimit(){
 	var drone = document.querySelector('a-entity#drone');
 	var dronePos = drone.getAttribute( "position" );
-	if(dronePos.y > 50){
+	var droneRadius = Math.sqrt(Math.pow(dronePos.x,2)+Math.pow(dronePos.y,2)+Math.pow(dronePos.z,2));
+	if(droneRadius > 50){
 		spacelimitMessage();
 		resetPosition();
 	}
 }
 function send(){
-	console.log(config);
+	//console.log(config);
 	var PitchSet = document.getElementById('PitchSet');
 	var AltSet = document.getElementById('AltSet');
 	var YawSet = document.getElementById('YawSet');
@@ -399,16 +400,15 @@ function send(){
 	config.yaw = YawSet.value;
 	config.roll = RollSet.value;
 	config.alt = AltSet.value;
-	console.log(config);
 
 }
 function onFocusAxes(elt){
 	configMode = true
 ;	selectedAxe = elt.id;
-	console.log(elt);
+	//console.log(elt);
 }
 function onFocusOutAxes(elt){
-	console.log("focus out");
+	//console.log("focus out");
 	configMode = false;
 }
 
