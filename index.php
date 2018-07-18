@@ -18,10 +18,10 @@
   	<input type="button" class="bsize" value="Reset Controller" onclick="buttonResetClicked()">
   	<input type="button" class="bsize" value="Reset Position" onclick="resetPosition()">
   	<form>
-		Pitch: <input type="number" min="0" id="PitchSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
-		Alt: <input type="number" min="0" id="AltSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
-		Yaw: <input type="number" min="0" id="YawSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
-		Roll: <input type="number" min="0" id="RollSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"><br>
+		Pitch: <input type="number" min="0" id="PitchSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"> <input type="checkbox" id="PitchReverse" onclick="reverse()" /> <label for="PitchReverse">Reverse</label><br>
+		Alt: <input type="number" min="0" id="AltSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"> <input type="checkbox" id="AltReverse" onclick="reverse()" /> <label for="AltReverse">Reverse</label><br>
+		Yaw: <input type="number" min="0" id="YawSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"> <input type="checkbox" id="YawReverse" onclick="reverse()" /> <label for="YawReverse">Reverse</label><br>
+		Roll: <input type="number" min="0" id="RollSet" onfocus="onFocusAxes(this)" onfocusout="onFocusOutAxes(this)"> <input type="checkbox" id="RollReverse" onclick="reverse()" /> <label for="RollReverse">Reverse</label><br>
 	<!--<input type="button" class="bsize" value="Send" onclick="send()"> -->
 	</form>
 
@@ -34,8 +34,8 @@
 	    	<a-asset-item id="drone" src="../img/LAB470_V4_Quadcopter.ply"></a-asset-item>
 	    </a-assets>
 	  	<a-entity id="drone" ply-model="src: #drone" position="0 0.4 -3.3" scale="0.001 0.001 0.001"></a-entity>
-	  	<a-cylinder id="ground" src="#groundTexture" radius="30" height="0.1"></a-cylinder>
-	  	<a-sky id="background" src="#skyTexture" theta-length="90" radius="30"></a-sky>
+	  	<a-cylinder id="ground" src="#groundTexture" radius="50" height="0.1"></a-cylinder>
+	  	<a-sky id="background" src="#skyTexture" theta-length="90" radius="50"></a-sky>
 	</a-scene>
 	<script type="text/javascript" src="flightsim.js"></script>
   </body>

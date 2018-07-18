@@ -81,11 +81,11 @@ function goPitch(value){
 	var dronePos = drone.getAttribute( "position" );
 	var droneRot = drone.getAttribute( "rotation" );
 	if(dronePos){
-		console.log(droneRot.y);
+		//console.log(droneRot.y);
 		orientation = droneRot.y;
 		zIncre = value*(cosD(orientation));
 		xIncre = value*(sinD(orientation));
-		console.log(orientation+" "+zIncre+" "+xIncre);
+		//console.log(orientation+" "+zIncre+" "+xIncre);
 		dronePos.z = dronePos.z+zIncre;
 		dronePos.x = dronePos.x+xIncre;
 		drone.setAttribute( "position", dronePos);
@@ -112,7 +112,7 @@ function horizontalRotate(value){
 		drone.setAttribute( "rotation", dronePos);
 	}
 	var droneRot = drone.getAttribute("rotation");
-	console.log(droneRot.y);
+	//console.log(droneRot.y);
 }
 function tiltX(value){
 	var drone = document.querySelector('a-entity#drone');
@@ -158,6 +158,10 @@ function syncDisplay(config){
 	document.getElementById("YawSet").value = config.yaw;
 	document.getElementById("RollSet").value = config.roll;
 	document.getElementById("AltSet").value = config.alt;
+	document.getElementById("PitchReverse").checked = config.pitchReverse;
+	document.getElementById("YawReverse").checked = config.yawReverse;
+	document.getElementById("RollReverse").checked = config.rollReverse;
+	document.getElementById("AltReverse").checked = config.altReverse;
 }
 function connecthandler(e) {
 	console.log("add");
@@ -260,17 +264,25 @@ function updateStatus() {
 	if(config.yawReverse){
 		yawCoef = -1;
 	}
+	pitchCoef = 1;
+	if(config.pitchReverse){
+		pitchCoef = -1;
+	}
+	rollCoef = 1;
+	if(config.rollReverse){
+		rollCoef = -1;
+	}
 	if(controller.axes[config.alt] > 0.1 || controller.axes[config.alt] < -0.1){
 		goAlt(controller.axes[config.alt]/10*altCoef);
 	}
 	if(controller.axes[config.pitch] > 0.2 || controller.axes[config.pitch] < -0.2){
-		goPitch(controller.axes[config.pitch]/10);
-		tiltZ(controller.axes[config.pitch]*(30));
+		goPitch(controller.axes[config.pitch]/10*pitchCoef);
+		tiltZ(controller.axes[config.pitch]*(30)*pitchCoef);
 		tiltedZ = true;
 	}
 	if(controller.axes[config.roll] > 0.2 || controller.axes[config.roll] < -0.2){
-		goRoll(controller.axes[config.roll]/10);
-		tiltX(controller.axes[config.roll]*(-30));
+		goRoll(controller.axes[config.roll]/10*rollCoef);
+		tiltX(controller.axes[config.roll]*(-30)*rollCoef);
 		tiltedX = true;
 	}
 	if(controller.axes[config.yaw] > 0.1 || controller.axes[config.yaw] < -0.1){
@@ -283,7 +295,29 @@ function updateStatus() {
 	if(!tiltedZ){
 		tiltZ(0);
 	}
+	//camera follow
+	var drone = document.querySelector('a-entity#drone');
+	var cameraRot = camera.getAttribute( "rotation" );
+	var dronePos = drone.getAttribute("position");
+	var cameraPos = camera.getAttribute("position");
+	if(cameraRot && dronePos){
+		//left-right
+		var angleYRad = Math.atan(dronePos.x/(dronePos.z));
+		var angleYDeg = angleYRad* (180 / Math.PI);
+		if(dronePos.z > 0){angleYDeg = (angleYDeg - 180)}
+		cameraRot.y = angleYDeg;
+
+		//up-down
+		var angleXRad = Math.atan( Math.sqrt((Math.pow(dronePos.z,2)+Math.pow(dronePos.x,2))) / (dronePos.y-cameraPos.y) );
+		var angleXDeg = angleXRad* (180 / Math.PI);
+		if(dronePos.y-cameraPos.y > 0){angleXDeg = 90 - angleXDeg;}
+		else{angleXDeg = - 90 - angleXDeg}
+		cameraRot.x = angleXDeg;
+		camera.setAttribute( "rotation", cameraRot);
+		console.log(dronePos.y);
+	}
 	crash();
+	spaceLimit();
 	rAF(updateStatus);
 }
 
@@ -338,36 +372,39 @@ function resetPosition() {
 	var drone = document.querySelector('a-entity#drone');
 	drone.setAttribute( "position", "0 0.4 -3.3");
 	drone.setAttribute( "rotation", "0 0 0");
-
-	var camera = document.querySelector('#camera');
-var cameraRot = camera.getAttribute( "rotation" );
-cameraRot.y = 20;
-camera.setAttribute( "rotation", cameraRot);
 }
 function crash(){
 	var drone = document.querySelector('a-entity#drone');
 	var dronePos = drone.getAttribute( "position" );
-	if(dronePos.y < 0){
-		error();
+	if(dronePos.y < 0.4){
+		crashedMessage();
+		resetPosition();
+	}
+}
+function spaceLimit(){
+	var drone = document.querySelector('a-entity#drone');
+	var dronePos = drone.getAttribute( "position" );
+	if(dronePos.y > 50){
+		spacelimitMessage();
 		resetPosition();
 	}
 }
 function send(){
-	 console.log(config);
-	 var PitchSet = document.getElementById('PitchSet');
-	 var AltSet = document.getElementById('AltSet');
-	 var YawSet = document.getElementById('YawSet');
-	 var RollSet = document.getElementById('RollSet');
-	 config.pitch = PitchSet.value;
-	 config.yaw = YawSet.value;
-	 config.roll = RollSet.value;
-	 config.alt = AltSet.value;
-	 console.log(config);
+	console.log(config);
+	var PitchSet = document.getElementById('PitchSet');
+	var AltSet = document.getElementById('AltSet');
+	var YawSet = document.getElementById('YawSet');
+	var RollSet = document.getElementById('RollSet');
+	config.pitch = PitchSet.value;
+	config.yaw = YawSet.value;
+	config.roll = RollSet.value;
+	config.alt = AltSet.value;
+	console.log(config);
 
 }
 function onFocusAxes(elt){
-	configMode = true;
-	selectedAxe = elt.id;
+	configMode = true
+;	selectedAxe = elt.id;
 	console.log(elt);
 }
 function onFocusOutAxes(elt){
@@ -375,6 +412,45 @@ function onFocusOutAxes(elt){
 	configMode = false;
 }
 
-function error(){
+function crashedMessage(){
 	alert("Crashed");
+}
+function spacelimitMessage(){
+	alert("You reached the space limit");
+}
+function reverse(){
+	// Get the checkbox
+	var pitchCheckBox = document.getElementById("PitchReverse");
+	var altCheckBox = document.getElementById("AltReverse");
+	var yawCheckBox = document.getElementById("YawReverse");
+	var rollCheckBox = document.getElementById("RollReverse");
+
+	// If the checkbox is checked, reverse the pitch axis
+	if(pitchCheckBox.checked == true){
+		config.pitchReverse = true;
+	}
+	else{
+		config.pitchReverse = false;
+	}
+	// If the checkbox is checked, reverse the Alt axis
+	if(altCheckBox.checked == true){
+		config.altReverse = true;
+	}
+	else{
+		config.altReverse = false;
+	}
+	// If the checkbox is checked, reverse the Yaw axis
+	if(yawCheckBox.checked == true){
+		config.yawReverse = true;
+	}
+	else{
+		config.yawReverse = false;
+	}
+	// If the checkbox is checked, reverse the Roll axis
+	if(rollCheckBox.checked == true){
+		config.rollReverse = true;
+	}
+	else{
+		config.rollReverse = false;
+	}
 }
