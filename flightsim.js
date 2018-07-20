@@ -144,12 +144,12 @@ var haveEvents = 'GamepadEvent' in window;
 var haveWebkitEvents = 'WebKitGamepadEvent' in window;
 var controllers = {};
 var selectedController = {};
-var defaultConfig = {pitch:1, yaw:0, roll:2, alt:3,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:true};
-var config = {pitch:1, yaw:0, roll:2, alt:3,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:true};
+var defaultConfig = {pitch:1, yaw:0, roll:2, alt:3,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:true, loiterButtonNumber:5};
+var config = defaultConfig;
 var rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.requestAnimationFrame;
 var configMode = false;
 var selectedAxe = "";
-syncDisplay(defaultConfig);
+syncDisplay(config);
 
 	
 function syncDisplay(config){
@@ -318,6 +318,7 @@ function updateStatus() {
 	}
 	crash();
 	spaceLimit();
+	changeMode(controller);
 	rAF(updateStatus);
 }
 
@@ -349,7 +350,7 @@ function joystick() {
 	if((selectedController.id).indexOf("Xbox") != -1){
 		Object.assign(config, defaultConfig);
 	}else if((selectedController.id).indexOf("KMODEL") != -1){
-		config = {pitch:0, yaw:3, roll:4, alt:1,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:false};
+		config = {pitch:0, yaw:3, roll:4, alt:1,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:false, loiterButtonNumber:2};
 	}else{
 		Object.assign(config, defaultConfig);
 	}
@@ -362,6 +363,7 @@ function resetController() {
 	if((selectedController.id).indexOf("Xbox") != -1){
 		Object.assign(config, defaultConfig);
 	}else if((selectedController.id).indexOf("KMODEL") != -1){
+		//Object.assign(config, KMODELConfig);
 		config = {pitch:0, yaw:3, roll:4, alt:1,pitchReverse:false, yawReverse:true, rollReverse:false, altReverse:false};
 	}else{
 		Object.assign(config, defaultConfig);
@@ -452,5 +454,19 @@ function reverse(){
 	}
 	else{
 		config.rollReverse = false;
+	}
+}
+var previousLoiterState = false;
+function changeMode(currentController){
+	if((selectedController.id).indexOf("Xbox") != -1){
+		if(!currentController.buttons[config.loiterButtonNumber].pressed && previousLoiterState){
+			console.log("loiter release/triggered");//change the mode
+		}
+		previousLoiterState = currentController.buttons[config.loiterButtonNumber].pressed;
+	}else if((selectedController.id).indexOf("KMODEL") != -1){
+		if(!currentController.buttons[config.loiterButtonNumber].value == 1){
+			console.log("release/triggered");//change the mode
+		}
+		previousLoiterState = currentController.buttons[config.loiterButtonNumber].pressed;
 	}
 }
