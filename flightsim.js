@@ -149,8 +149,12 @@ var config = defaultConfig;
 var rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.requestAnimationFrame;
 var configMode = false;
 var selectedAxe = "";
-syncDisplay(config);
+var modeList = ["loiter", "manual"]
+var flightMode = 0; 
 
+
+
+syncDisplay(config);
 	
 function syncDisplay(config){
 	//console.log(config);
@@ -272,8 +276,12 @@ function updateStatus() {
 	if(config.rollReverse){
 		rollCoef = -1;
 	}
-	if(controller.axes[config.alt] > 0.1 || controller.axes[config.alt] < -0.1){
-		goAlt(controller.axes[config.alt]/10*altCoef);
+	if(modeList[flightMode] == "loiter"){
+		if(controller.axes[config.alt] > 0.1 || controller.axes[config.alt] < -0.1){
+			goAlt(controller.axes[config.alt]/10*altCoef);
+		}
+	}else if(modeList[flightMode] == "manual"){
+		goAlt((controller.axes[config.alt]+0.2)/10*altCoef);
 	}
 	if(controller.axes[config.pitch] > 0.2 || controller.axes[config.pitch] < -0.2){
 		goPitch(controller.axes[config.pitch]/10*pitchCoef);
@@ -415,7 +423,12 @@ function onFocusOutAxes(elt){
 }
 
 function crashedMessage(){
-	alert("Crashed");
+	if (modeList[flightMode] == "manual") {
+		resetPosition();
+	}
+	else{
+		alert("Crashed");
+	}
 }
 function spacelimitMessage(){
 	alert("You reached the space limit");
@@ -461,6 +474,13 @@ function changeMode(currentController){
 	if((selectedController.id).indexOf("Xbox") != -1){
 		if(!currentController.buttons[config.loiterButtonNumber].pressed && previousLoiterState){
 			console.log("loiter release/triggered");//change the mode
+			//var drone = document.querySelector('a-entity#drone');
+			//var dronePos = drone.getAttribute( "position" );
+			flightMode++;
+			if(flightMode >= modeList.length){
+				flightMode = 0;
+			}
+			console.log(modeList[flightMode]);
 		}
 		previousLoiterState = currentController.buttons[config.loiterButtonNumber].pressed;
 	}else if((selectedController.id).indexOf("KMODEL") != -1){
@@ -470,3 +490,4 @@ function changeMode(currentController){
 		previousLoiterState = currentController.buttons[config.loiterButtonNumber].pressed;
 	}
 }
+
