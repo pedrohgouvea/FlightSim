@@ -32,8 +32,13 @@
 	    	<img id="groundTexture" src="../img/grassField.jpg">
 	    	<img id="skyTexture" src="../img/sky3b.jpg">
 	    	<a-asset-item id="drone" src="../img/LAB470_V4_Quadcopter.ply"></a-asset-item>
+	    	<a-asset-item id="prop" src="../img/prop_enroute_ver19_centeredBlack.ply"></a-asset-item>
 	    </a-assets>
-	  	<a-entity id="drone" ply-model="src: #drone" position="0 0.4 -3.3" scale="0.001 0.001 0.001"></a-entity>
+	    <a-entity id="drone" ply-model="src: #drone" position="0 0.4 -3.3" scale="0.001 0.001 0.001"></a-entity>
+	  	<a-entity ply-model="src: #prop" position="0 0.7 -3.3" scale="0.001 0.001 0.001"animation__r1="property: rotation; dir: reverse; dur: 1000; easing: linear; loop: true; to: 0 360 0"></a-entity>
+		
+		<a-entity ply-model="src: #prop" position="0 0.9 -3.3" scale="0.001 0.001 0.001"
+		animation__r1="property: rotation; dir: normal; dur: 1000; easing: linear; loop: true; to: 0 360 0"></a-entity>
 	  	<a-cylinder id="ground" src="#groundTexture" radius="50" height="0.1"></a-cylinder>
 	  	<a-sky id="background" src="#skyTexture" theta-length="90" radius="50"></a-sky>
 	</a-scene>
