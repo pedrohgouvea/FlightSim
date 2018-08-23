@@ -486,8 +486,11 @@ function changeMode(currentController){
 	}else if((selectedController.id).indexOf("KMODEL") != -1){
 		if(!currentController.buttons[config.loiterButtonNumber].value == 1){
 			console.log("release/triggered");//change the mode
-		}
+			flightMode++;
+			if (flightMode >= modeList.length) {
+				flightMode = 0;
+			}
+		} 
 		previousLoiterState = currentController.buttons[config.loiterButtonNumber].pressed;
 	}
 }
-
